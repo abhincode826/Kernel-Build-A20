@@ -1,15 +1,9 @@
-cat > ~/GitHub/Kernel-Build-A20/.github/workflows/main.yml << 'EOF'
 name: Build A20 Kernel + KernelSU-Next
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: 'Build type (release/debug)'
-        required: false
-        default: 'release'
 
 env:
   KERNEL_SOURCE: https://github.com/abhincode826/Eureka-Kernel
@@ -58,8 +52,6 @@ jobs:
         run: |
           if [ -f "drivers/kernelsu/.ksu_version" ]; then
             KSU_VER=$(cat drivers/kernelsu/.ksu_version)
-          elif [ -d "KernelSU-Next" ]; then
-            KSU_VER=$(git -C KernelSU-Next describe --tags --abbrev=0 2>/dev/null || echo "unknown")
           else
             KSU_VER="legacy"
           fi
@@ -98,11 +90,11 @@ jobs:
           BUILD_NUM=${{ github.run_number }}
           ZIP_NAME="${{ env.DEVICE_NAME }}_${KERNEL_VER}-KSUN-${KSU_VER}_b${BUILD_NUM}.zip"
           echo "KERNEL_VER=${KERNEL_VER}" >> $GITHUB_ENV
-          echo "ZIP_NAME=${ZIP_NAME}"     >> $GITHUB_ENV
+          echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
           cd AK3
           zip -r9 "../${ZIP_NAME}" . -x "*.git*" -x "*.md"
           cd ..
-          echo "Built: ${ZIP_NAME} ($(du -sh ${ZIP_NAME} | cut -f1))"
+          echo "Built: ${ZIP_NAME}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -110,12 +102,10 @@ jobs:
           tag_name: "build-${{ github.run_number }}"
           name: "${{ env.DEVICE_NAME }} Kernel | KSU ${{ env.KSU_VER }} | #${{ github.run_number }}"
           body: |
-            ## ${{ env.DEVICE_NAME }} Kernel — Build #${{ github.run_number }}
-            - **KernelSU-Next:** `${{ env.KSU_VER }}`
-            - **Kernel version:** `${{ env.KERNEL_VER }}`
-            - **Source commit:** `${{ github.sha }}`
-            - **Defconfig:** `${{ env.KERNEL_DEFCONFIG }}`
-            Flash in TWRP or any AnyKernel3-compatible recovery.
+            ## ${{ env.DEVICE_NAME }} Kernel Build #${{ github.run_number }}
+            - KernelSU-Next: ${{ env.KSU_VER }}
+            - Kernel: ${{ env.KERNEL_VER }}
+            - Defconfig: ${{ env.KERNEL_DEFCONFIG }}
           files: ${{ env.ZIP_NAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -123,15 +113,9 @@ jobs:
       - name: Send build to Telegram
         if: success() && vars.TG_ENABLED == 'true'
         run: |
-          CAPTION="✅ *${{ env.DEVICE_NAME }} Kernel Build #${{ github.run_number }}*%0A"
-          CAPTION+="KSU-Next: \`${{ env.KSU_VER }}\`%0A"
-          CAPTION+="Kernel: \`${{ env.KERNEL_VER }}\`%0A"
-          CAPTION+="Commit: \`$(echo ${{ github.sha }} | head -c 8)\`"
           curl -sf \
             -F "chat_id=${{ secrets.TG_CHAT_ID }}" \
             -F "document=@${{ env.ZIP_NAME }}" \
-            -F "caption=${CAPTION}" \
-            -F "parse_mode=Markdown" \
+            -F "caption=Build ${{ github.run_number }} done" \
             "https://api.telegram.org/bot${{ secrets.TG_BOT_TOKEN }}/sendDocument" \
-            || echo "::warning::Telegram upload failed (non-fatal)"
-EOF
+            || echo "::warning::Telegram upload failed"
