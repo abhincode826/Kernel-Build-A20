@@ -78,9 +78,9 @@ jobs:
             Image dtb.img \
             -j$(nproc) 2>&1 | tee build.log
           [ -f arch/arm64/boot/Image ] || \
-            { echo "::error::Image not found — build failed"; grep -i "error:" build.log | tail -30; exit 1; }
+            { echo "::error::Image not found - build failed"; grep -i "error:" build.log | tail -30; exit 1; }
 
-        - name: Upload build log
+      - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
         with:
