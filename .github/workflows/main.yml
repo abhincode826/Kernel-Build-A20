@@ -131,7 +131,7 @@ jobs:
 
       # ── 9. Send to Telegram ─────────────────────────────────────────────────
       - name: Send build to Telegram
-        if: success() && secrets.TG_BOT_TOKEN != ''
+        if: success() && vars.TG_ENABLED == 'true'
         run: |
           CAPTION="✅ *${{ env.DEVICE_NAME }} Kernel Build #${{ github.run_number }}*%0A"
           CAPTION+="KSU-Next: \`${{ env.KSU_VER }}\`%0A"
