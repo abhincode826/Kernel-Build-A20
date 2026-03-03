@@ -80,6 +80,14 @@ jobs:
           [ -f arch/arm64/boot/Image ] || \
             { echo "::error::Image not found — build failed"; grep -i "error:" build.log | tail -30; exit 1; }
 
+        - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ github.run_number }}
+          path: kernel/build.log
+          if-no-files-found: ignore
+
       - name: Package flashable zip
         run: |
           cp -r workflow-repo/AnyKernel13 AK3
