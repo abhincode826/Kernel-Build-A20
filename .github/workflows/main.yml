@@ -12,7 +12,7 @@ on:
 
 env:
   # ── Kernel source ────────────────────────────────────────────────────────────
-  KERNEL_SOURCE: https://github.com/YOUR_USERNAME/eureka-kernel
+  KERNEL_SOURCE: https://github.com/abhincode826/Eureka-Kernel
   KERNEL_BRANCH: R15-OneUI
   KERNEL_DEFCONFIG: exynos7885-a20_defconfig
   # ── Device / packaging ───────────────────────────────────────────────────────
