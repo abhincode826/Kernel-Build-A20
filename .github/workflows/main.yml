@@ -90,7 +90,8 @@ jobs:
 
       - name: Package flashable zip
         run: |
-          cp -r workflow-repo/AnyKernel13 AK3
+          git clone --depth=1 https://github.com/osm0sis/AnyKernel3 AK3
+          cp workflow-repo/AnyKernel13/anykernel.sh AK3/anykernel.sh
           cp kernel/arch/arm64/boot/Image AK3/
           [ -f kernel/arch/arm64/boot/dtb.img ] && cp kernel/arch/arm64/boot/dtb.img AK3/
           KERNEL_VER=$(grep UTS_RELEASE kernel/include/generated/utsrelease.h \
