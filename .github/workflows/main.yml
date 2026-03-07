@@ -11,6 +11,8 @@ env:
   KERNEL_DEFCONFIG: exynos7885-a20_defconfig
   DEVICE_NAME: A20
   ARCH: arm64
+  KSU_MANAGER_SIZE: "0x3e6"
+  KSU_MANAGER_HASH: "5bf844d1431127dbb76042e9341de19216fdd7d394c01b3c96cc21216c8c69a5"
 
 permissions:
   contents: write
@@ -75,6 +77,8 @@ jobs:
             CROSS_COMPILE=aarch64-linux-gnu- \
             CLANG_TRIPLE=aarch64-linux-gnu- \
             KCFLAGS="-Wno-error" \
+            KSU_NEXT_MANAGER_SIZE=${{ env.KSU_MANAGER_SIZE }} \
+            KSU_NEXT_MANAGER_HASH=${{ env.KSU_MANAGER_HASH }} \
             Image dtb.img \
             -j$(nproc) 2>&1 | tee build.log
           [ -f arch/arm64/boot/Image ] || \
