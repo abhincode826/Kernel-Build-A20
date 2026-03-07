@@ -72,6 +72,14 @@ jobs:
         run: |
           grep "CONFIG_KSU" .config
                 
+      - name: Resolve KernelSU-Next version
+        run: |
+           KSU_TAG=$(curl -s https://api.github.com/repos/rifsxd/KernelSU-Next/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+           KSU_NUM=$(echo $KSU_TAG | tr -d 'v' | tr -d '.')
+           echo "KSU_GIT_VERSION=${KSU_NUM}" >> $GITHUB_ENV
+           echo "KSU_VERSION_TAG=${KSU_TAG}" >> $GITHUB_ENV
+           echo "Resolved: ${KSU_TAG} / ${KSU_NUM}"
+                
       - name: Build kernel
         working-directory: kernel
         run: |
@@ -80,6 +88,8 @@ jobs:
             CROSS_COMPILE=aarch64-linux-gnu- \
             CLANG_TRIPLE=aarch64-linux-gnu- \
             KCFLAGS="-Wno-error" \
+            KSU_GIT_VERSION=${{ env.KSU_GIT_VERSION }} \
+            KSU_VERSION_TAG=${{ env.KSU_VERSION_TAG }} \
             Image dtb.img \
             -j$(nproc) 2>&1 | tee build.log
           [ -f arch/arm64/boot/Image ] || \
