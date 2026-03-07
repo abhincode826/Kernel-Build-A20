@@ -69,6 +69,11 @@ jobs:
             CLANG_TRIPLE=aarch64-linux-gnu- \
             ${{ env.KERNEL_DEFCONFIG }} -j$(nproc)
 
+      - name: Verify KSU config
+              working-directory: kernel
+              run: |
+                grep "CONFIG_KSU" .config
+                
       - name: Build kernel
         working-directory: kernel
         run: |
