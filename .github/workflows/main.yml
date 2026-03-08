@@ -17,23 +17,25 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
 
       - name: Install build dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y \
-            bc bison build-essential ccache flex git \
-            libncurses5-dev libssl-dev python3 zip curl \
-            clang-15 lld-15 llvm-15 binutils-aarch64-linux-gnu
-          sudo ln -sf /usr/bin/clang-15        /usr/local/bin/clang
-          sudo ln -sf /usr/bin/ld.lld-15       /usr/local/bin/ld.lld
-          sudo ln -sf /usr/bin/llvm-ar-15      /usr/local/bin/llvm-ar
-          sudo ln -sf /usr/bin/llvm-nm-15      /usr/local/bin/llvm-nm
-          sudo ln -sf /usr/bin/llvm-objcopy-15 /usr/local/bin/llvm-objcopy
-          sudo ln -sf /usr/bin/llvm-objdump-15 /usr/local/bin/llvm-objdump
-          sudo ln -sf /usr/bin/llvm-strip-15   /usr/local/bin/llvm-strip
+            bc bison build-essential flex git \
+            libncurses5-dev libssl-dev python3 zip curl cpio \
+            gcc-aarch64-linux-gnu
+
+      - name: Setup Neutron Clang toolchain
+        run: |
+          mkdir -p toolchain
+          cd toolchain
+          bash <(curl -s "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman") -S=10032024
+          bash <(curl -s "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman") --patch=glibc
+          cd ..
+          echo "$(pwd)/toolchain/bin" >> $GITHUB_PATH
 
       - name: Checkout workflow repo
         uses: actions/checkout@v4
@@ -47,22 +49,15 @@ jobs:
             ${{ env.KERNEL_SOURCE }} kernel
           echo "KERNEL_DIR=$GITHUB_WORKSPACE/kernel" >> $GITHUB_ENV
 
-      - name: Resolve KernelSU-Next version
-        working-directory: kernel
+      - name: Set KSU version
         run: |
-          if [ -f "drivers/kernelsu/.ksu_version" ]; then
-            KSU_VER=$(cat drivers/kernelsu/.ksu_version)
-          else
-            KSU_VER="legacy"
-          fi
-          echo "KSU_VER=${KSU_VER}" >> $GITHUB_ENV
-          echo "KernelSU-Next version: ${KSU_VER}"
+          echo "KSU_VER=v3.1.0" >> $GITHUB_ENV
 
       - name: Generate defconfig
         working-directory: kernel
         run: |
           make ARCH=${{ env.ARCH }} \
-            CC=clang-15 LD=ld.lld-15 AR=llvm-ar-15 NM=llvm-nm-15 \
+            CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm \
             CROSS_COMPILE=aarch64-linux-gnu- \
             CLANG_TRIPLE=aarch64-linux-gnu- \
             ${{ env.KERNEL_DEFCONFIG }} -j$(nproc)
@@ -71,25 +66,16 @@ jobs:
         working-directory: kernel
         run: |
           grep "CONFIG_KSU" .config
-                
-      - name: Resolve KernelSU-Next version
-        run: |
-           KSU_TAG=$(curl -s https://api.github.com/repos/rifsxd/KernelSU-Next/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
-           KSU_NUM=$(echo $KSU_TAG | tr -d 'v' | tr -d '.')
-           echo "KSU_GIT_VERSION=${KSU_NUM}" >> $GITHUB_ENV
-           echo "KSU_VERSION_TAG=${KSU_TAG}" >> $GITHUB_ENV
-           echo "Resolved: ${KSU_TAG} / ${KSU_NUM}"
-                
+
       - name: Build kernel
         working-directory: kernel
         run: |
           make ARCH=${{ env.ARCH }} \
-            CC=clang-15 LD=ld.lld-15 AR=llvm-ar-15 NM=llvm-nm-15 \
+            CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm \
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
             CROSS_COMPILE=aarch64-linux-gnu- \
             CLANG_TRIPLE=aarch64-linux-gnu- \
             KCFLAGS="-Wno-error" \
-            KSU_GIT_VERSION=${{ env.KSU_GIT_VERSION }} \
-            KSU_VERSION_TAG=${{ env.KSU_VERSION_TAG }} \
             Image dtb.img \
             -j$(nproc) 2>&1 | tee build.log
           [ -f arch/arm64/boot/Image ] || \
