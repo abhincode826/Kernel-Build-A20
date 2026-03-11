@@ -69,6 +69,8 @@ jobs:
           grep -i KSU arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
           grep -i kernelsu drivers/Kconfig
           ls -la drivers/kernelsu/
+          make ARCH=arm64 exynos7885-a20_defconfig 2>&1 | grep -i "ksu\|warning"
+          grep "CONFIG_KSU" .config
                         
       - name: Generate defconfig
         working-directory: kernel
