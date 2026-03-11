@@ -62,7 +62,14 @@ jobs:
           echo "CONFIG_KSU_MANUAL_HOOK=y" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
           echo "# CONFIG_KPROBES is not set" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
           echo "# CONFIG_HAVE_KPROBES is not set" >> arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
-          
+
+      - name: Debug defconfig
+        working-directory: kernel
+        run: |
+          grep -i KSU arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
+          grep -i kernelsu drivers/Kconfig
+          ls -la drivers/kernelsu/
+                        
       - name: Generate defconfig
         working-directory: kernel
         run: |
