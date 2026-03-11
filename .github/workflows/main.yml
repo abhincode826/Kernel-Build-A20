@@ -19,6 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
+    
       - name: Install build dependencies
         run: |
           sudo apt-get update -qq
@@ -54,7 +55,7 @@ jobs:
           echo "KSU_VER=v3.1.0-legacy" >> $GITHUB_ENV
           curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.1.0-legacy
           
-       - name: Debug defconfig
+      - name: Debug defconfig
         working-directory: kernel
         run: |
           grep -i KSU arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
