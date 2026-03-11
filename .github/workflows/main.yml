@@ -75,10 +75,7 @@ jobs:
       - name: Enable KernelSU in defconfig
         working-directory: kernel
         run: |
-          echo "CONFIG_KSU=y" >> .config
-          echo "CONFIG_KSU_MANUAL_HOOK=y" >> .config
-          echo "# CONFIG_KPROBES is not set" >> .config
-          echo "# CONFIG_HAVE_KPROBES is not set" >> .config
+          scripts/config --file .config -e KSU -e KSU_MANUAL_HOOK -d KPROBES -d HAVE_KPROBES
 
       - name: Check KSU in config
         working-directory: kernel
