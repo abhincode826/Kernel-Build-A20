@@ -69,7 +69,7 @@ jobs:
           grep -i KSU arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
           grep -i kernelsu drivers/Kconfig
           ls -la drivers/kernelsu/
-          grep "CONFIG_KSU" .config
+          grep "CONFIG_KSU" .config || true
                         
       - name: Generate defconfig
         working-directory: kernel
