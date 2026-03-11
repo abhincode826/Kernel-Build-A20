@@ -75,7 +75,7 @@ jobs:
       - name: Enable KernelSU in defconfig
         working-directory: kernel
         run: |
-          scripts/config --file .config -e KSU -e KSU_MANUAL_HOOK -d KPROBES -d HAVE_KPROBES
+          scripts/config --file .config --set-val KSU y --enable KSU_MANUAL_HOOK --disable KPROBES --disable HAVE_KPROBES
 
       - name: Check KSU in config
         working-directory: kernel
