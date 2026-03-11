@@ -113,7 +113,7 @@ jobs:
           KERNEL_VER=$(grep UTS_RELEASE kernel/include/generated/utsrelease.h \
             | cut -d'"' -f2 | sed 's/+*$//')
           BUILD_NUM=${{ github.run_number }}
-          ZIP_NAME="${{ env.DEVICE_NAME }}_${KERNEL_VER}-KSUN-${{ env.KSU_VER }}_b${BUILD_NUM}.zip"
+          ZIP_NAME="Eureka-KSU-b${BUILD_NUM}.zip""
           echo "KERNEL_VER=${KERNEL_VER}" >> $GITHUB_ENV
           echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
           cd AK3
@@ -122,6 +122,7 @@ jobs:
           echo "Built: ${ZIP_NAME}"
 
       - name: Create GitHub Release
+        if: false
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "build-${{ github.run_number }}"
