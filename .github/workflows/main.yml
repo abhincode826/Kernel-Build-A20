@@ -97,6 +97,11 @@ jobs:
           [ -f arch/arm64/boot/Image ] || \
             { echo "::error::Image not found - build failed"; grep -i "error:" build.log | tail -30; exit 1; }
 
+      - name: Verify KSU survived build
+        working-directory: kernel
+        run: |
+          grep "CONFIG_KSU" .config || echo "KSU STRIPPED BY SILENTOLDCONFIG"
+                
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
