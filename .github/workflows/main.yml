@@ -54,6 +54,7 @@ jobs:
         run: |
           echo "KSU_VER=v1.1.1" >> $GITHUB_ENV
           curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v1.1.1
+          echo "CFLAGS_ksu.o += -fno-lto" >> drivers/kernelsu/Makefile
           sed -i 's/module_init(kernelsu_init)/late_initcall(kernelsu_init)/' drivers/kernelsu/ksu.c
           grep -n "module_init\|late_initcall\|kernelsu_init" drivers/kernelsu/ksu.c
           
