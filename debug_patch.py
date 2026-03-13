@@ -3,11 +3,14 @@ with open('drivers/kernelsu/ksu.c', 'r') as f:
 
 c = c.replace(
     'int __init kernelsu_init(void)\n{',
-    'int __init kernelsu_init(void)\n{\n\tpr_info("KSU: INIT START\\n");'
-)
-c = c.replace(
-    '\treturn 0;\n}',
-    '\tpr_info("KSU: INIT END\\n");\n\treturn 0;\n}'
+    '''int __init kernelsu_init(void)
+{
+\tstruct file *f;
+\tf = filp_open("/data/local/tmp/ksu_init.txt", O_WRONLY|O_CREAT|O_TRUNC, 0644);
+\tif (!IS_ERR(f)) {
+\t\tkernel_write(f, "KSU_INIT_CALLED\\n", 16, 0);
+\t\tfilp_close(f, NULL);
+\t}'''
 )
 
 with open('drivers/kernelsu/ksu.c', 'w') as f:
