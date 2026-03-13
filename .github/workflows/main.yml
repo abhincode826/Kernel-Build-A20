@@ -60,6 +60,8 @@ jobs:
           c=c.replace('int __init kernelsu_init(void)\n{','int __init kernelsu_init(void)\n{\n\tpr_info(\"KSU: kernelsu_init START\\\\n\");')
           open('drivers/kernelsu/ksu.c','w').write(c)
           "
+          echo "=== [DIAG-PATCH] ksu.c lines 32-40 after patch ==="
+          sed -n '32,40p' drivers/kernelsu/ksu.c
           echo "=== [DIAG-1] KSU init call ==="
           grep -n "module_init\|late_initcall\|kernelsu_init" drivers/kernelsu/ksu.c
           echo "=== [DIAG-2] VFS hooks present ==="
