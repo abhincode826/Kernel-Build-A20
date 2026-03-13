@@ -3,7 +3,7 @@
 # Adapted for Samsung Galaxy A20 (SM-A205F)
 properties() { '
 kernel.string=Eureka Kernel + KernelSU-Next by Abhin
-do.devicecheck=1
+do.devicecheck=0
 do.modules=0
 do.systemless=1
 do.cleanup=1
