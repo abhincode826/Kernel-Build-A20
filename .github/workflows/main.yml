@@ -55,7 +55,7 @@ jobs:
           echo "KSU_VER=v1.1.1" >> $GITHUB_ENV
           curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v1.1.1
           sed -i 's/module_init(kernelsu_init)/late_initcall(kernelsu_init)/' drivers/kernelsu/ksu.c
-          python3 ../debug_patch.py
+          python3 ../workflow-repo/debug_patch.py
           echo "=== [DIAG-PATCH] ksu.c lines 32-40 after patch ==="
           sed -n '32,40p' drivers/kernelsu/ksu.c
           echo "=== [DIAG-1] KSU init call ==="
