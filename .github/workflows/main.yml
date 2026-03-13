@@ -64,7 +64,7 @@ jobs:
           echo "# CONFIG_LTO_CLANG is not set" >> arch/arm64/configs/exynos7885-a20_defconfig
           echo "# CONFIG_THINLTO is not set" >> arch/arm64/configs/exynos7885-a20_defconfig
           echo "=== [DIAG-PATCH] ksu.c lines 32-40 after patch ==="
-          sed -n '32,40p' drivers/kernelsu/ksu.c
+          sed -n '32,101p' drivers/kernelsu/ksu.c
           echo "=== [DIAG-1] KSU init call ==="
           grep -n "module_init\|late_initcall\|kernelsu_init" drivers/kernelsu/ksu.c
           echo "=== [DIAG-2] VFS hooks present ==="
@@ -117,7 +117,7 @@ jobs:
         working-directory: kernel
         run: |
           echo "=== [DIAG-8] Config after build (silentoldconfig may have stripped) ==="
-          grep -E "CONFIG_KSU|CONFIG_LTO|CONFIG_THINLTO|CONFIG_KPROBES" .config || echo "NONE FOUND"
+          grep -E "CONFIG_KSU|CONFIG_LTO|CONFIG_THINLTO|CONFIG_KPROBES" out/.config || echo "NONE FOUND"
           echo "=== [DIAG-9] KSU symbols in vmlinux ==="
           nm out/vmlinux 2>/dev/null | grep -i "kernelsu\|ksu_handle" || echo "KSU SYMBOLS MISSING FROM VMLINUX"
           echo "=== [DIAG-10] KSU strings in Image ==="
