@@ -55,16 +55,23 @@ jobs:
           echo "KSU_VER=v1.1.1" >> $GITHUB_ENV
           curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v1.1.1
           sed -i 's/module_init(kernelsu_init)/late_initcall(kernelsu_init)/' drivers/kernelsu/ksu.c
+          echo "=== [DIAG-1] KSU init call ==="
           grep -n "module_init\|late_initcall\|kernelsu_init" drivers/kernelsu/ksu.c
+          echo "=== [DIAG-2] VFS hooks present ==="
+          grep -l "ksu_handle" fs/exec.c fs/open.c fs/read_write.c fs/stat.c kernel/reboot.c || echo "MISSING VFS HOOKS"
+          echo "=== [DIAG-3] KSU files present ==="
+          ls drivers/kernelsu/
+          echo "=== [DIAG-4] drivers/Makefile has kernelsu ==="
+          grep -i "kernelsu" drivers/Makefile || echo "MISSING FROM drivers/Makefile"
+          echo "=== [DIAG-5] drivers/Kconfig has kernelsu ==="
+          grep -i "kernelsu" drivers/Kconfig || echo "MISSING FROM drivers/Kconfig"
           
       - name: Debug defconfig
         working-directory: kernel
         run: |
-          grep -i KSU arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }}
-          grep -i kernelsu drivers/Kconfig
-          ls -la drivers/kernelsu/
-          grep "CONFIG_KSU" .config || true
-                        
+           echo "=== [DIAG-6] KSU entries in defconfig ==="
+           grep -i "KSU\|LTO" arch/arm64/configs/${{ env.KERNEL_DEFCONFIG }} || echo "NONE"
+          
       - name: Generate defconfig
         working-directory: kernel
         run: |
@@ -78,30 +85,34 @@ jobs:
         working-directory: kernel
         run: |
           scripts/config --file .config --set-val KSU y --enable KSU_MANUAL_HOOK --disable KPROBES --disable HAVE_KPROBES --disable LTO_CLANG --disable THINLTO --enable LTO_NONE
-      - name: Check KSU in config
-        working-directory: kernel
-        run: |
-          grep "KSU" .config || echo "CONFIG_KSU NOT FOUND"
-                
+          echo "=== [DIAG-7] Config after our changes (before build) ==="
+          grep -E "CONFIG_KSU|CONFIG_LTO|CONFIG_THINLTO|CONFIG_KPROBES" .config || echo "NONE FOUND"
+          
       - name: Build kernel
         working-directory: kernel
         run: |
           make ARCH=${{ env.ARCH }} \
-            CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm \
-            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
-            CROSS_COMPILE=aarch64-linux-gnu- \
-            CLANG_TRIPLE=aarch64-linux-gnu- \
-            KCFLAGS="-Wno-error" \
-            Image dtb.img \
-            -j$(nproc) 2>&1 | tee build.log
+          CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm \
+          OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
+          CROSS_COMPILE=aarch64-linux-gnu- \
+          CLANG_TRIPLE=aarch64-linux-gnu- \
+          KCFLAGS="-Wno-error" \
+          Image dtb.img \
+          -j$(nproc) 2>&1 | tee build.log
           [ -f arch/arm64/boot/Image ] || \
-            { echo "::error::Image not found - build failed"; grep -i "error:" build.log | tail -30; exit 1; }
-
+          { echo "::error::Image not found - build failed"; grep -i "error:" build.log | tail -30; exit 1; }
+          
       - name: Verify KSU survived build
         working-directory: kernel
         run: |
-          grep "CONFIG_KSU" .config || echo "KSU STRIPPED BY SILENTOLDCONFIG"
-          nm vmlinux 2>/dev/null | grep -i "kernelsu" || echo "KSU SYMBOLS MISSING FROM VMLINUX"
+          echo "=== [DIAG-8] Config after build (silentoldconfig may have stripped) ==="
+          grep -E "CONFIG_KSU|CONFIG_LTO|CONFIG_THINLTO|CONFIG_KPROBES" .config || echo "NONE FOUND"
+          echo "=== [DIAG-9] KSU symbols in vmlinux ==="
+          nm vmlinux 2>/dev/null | grep -i "kernelsu\|ksu_handle" || echo "KSU SYMBOLS MISSING FROM VMLINUX"
+          echo "=== [DIAG-10] KSU strings in Image ==="
+          strings arch/arm64/boot/Image | grep -i "kernelsu\|KernelSU" || echo "KSU STRINGS MISSING FROM IMAGE"
+          echo "=== [DIAG-11] late_initcall section in vmlinux ==="
+          nm vmlinux 2>/dev/null | grep "__initcall.*kernelsu\|initcall7.*kernelsu" || echo "KSU NOT IN INITCALL SECTION"
                 
       - name: Upload build log
         if: always()
