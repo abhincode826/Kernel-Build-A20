@@ -75,6 +75,7 @@ jobs:
           grep -i "kernelsu" drivers/Makefile || echo "MISSING FROM drivers/Makefile"
           echo "=== [DIAG-5] drivers/Kconfig has kernelsu ==="
           grep -i "kernelsu" drivers/Kconfig || echo "MISSING FROM drivers/Kconfig"
+          sed -i "s/-Eureka-KSUNext-Test/-Eureka-KSUNext-b${{ github.run_number }}/" arch/arm64/configs/exynos7885-a20_defconfig
           
       - name: Debug defconfig
         working-directory: kernel
@@ -85,7 +86,8 @@ jobs:
       - name: Generate defconfig
         working-directory: kernel
         run: |
-          make 0=out ARCH=${{ env.ARCH }} \
+          mkdir -p out
+          make O=out ARCH=${{ env.ARCH }} \
           CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm \
           CROSS_COMPILE=aarch64-linux-gnu- \
           CLANG_TRIPLE=aarch64-linux-gnu- \
