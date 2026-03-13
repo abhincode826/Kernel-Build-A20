@@ -101,6 +101,7 @@ jobs:
         working-directory: kernel
         run: |
           grep "CONFIG_KSU" .config || echo "KSU STRIPPED BY SILENTOLDCONFIG"
+          nm vmlinux 2>/dev/null | grep -i "kernelsu" || echo "KSU SYMBOLS MISSING FROM VMLINUX"
                 
       - name: Upload build log
         if: always()
