@@ -86,6 +86,8 @@ jobs:
           echo "=== [DIAG-SUCOMPAT] sucompat hook ==="
           grep -n "faccessat\|magic\|version" drivers/kernelsu/sucompat.c || true
           grep -rn "ioctl\|KSU_DEV\|dev/ksu" drivers/kernelsu/ || true
+          echo "=== [DIAG-SUCOMPAT-FULL] ==="
+          sed -n '80,130p' drivers/kernelsu/sucompat.c || true
           
       - name: Debug defconfig
         working-directory: kernel
