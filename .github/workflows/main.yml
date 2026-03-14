@@ -80,6 +80,8 @@ jobs:
           grep -rn "kobject_create\|ksu_kobj\|kernel_kobj" drivers/kernelsu/ | grep -v "\.o:"
           echo "=== [DIAG-DEV] who creates /dev/ksu ==="
           grep -rn "misc_register" drivers/kernelsu/ || true
+          echo "=== [DIAG-IOCTL] how kernel exposes interface ==="
+          grep -rn "ioctl\|KSU_DEV\|dev/ksu" drivers/kernelsu/ || true
           
       - name: Debug defconfig
         working-directory: kernel
