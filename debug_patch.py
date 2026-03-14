@@ -24,6 +24,12 @@ with open('drivers/kernelsu/ksu.c', 'w') as f:
     f.write(c)
 
 with open('drivers/kernelsu/apk_sign.c', 'r') as f:
+    lines = f.readlines()
+print("LINE 282:", repr(lines[281]))
+print("LINE 283:", repr(lines[282]))
+print("LINE 284:", repr(lines[283]))
+
+with open('drivers/kernelsu/apk_sign.c', 'r') as f:
     a = f.read()
 a = a.replace(
     '\tif (v3_signing_exist || v3_1_signing_exist) {',
