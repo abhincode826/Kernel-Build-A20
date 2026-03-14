@@ -90,6 +90,8 @@ jobs:
           sed -n '80,130p' drivers/kernelsu/sucompat.c || true
           echo "=== [DIAG-KSU-FULL] ksu.c full ==="
           cat drivers/kernelsu/ksu.c || true
+          echo "=== [DIAG-SUPERCALLS-INIT] ==="
+          grep -n "ksu_supercalls_init\|kobject\|ksu_kobj\|sys/kernel/ksu" drivers/kernelsu/supercalls.c || true
           
       - name: Debug defconfig
         working-directory: kernel
