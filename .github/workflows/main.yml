@@ -52,9 +52,8 @@ jobs:
       - name: Setup KernelSU-Next
         working-directory: kernel
         run: |
-          echo "KSU_VER=v1.1.1" >> $GITHUB_ENV
-          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v1.1.1
-          sed -i 's/KSU_NEXT_MANAGER_HASH := 79e590113c4c4c0c222978e413a5faa801666957b1212a328e46c00c69821bf7/KSU_NEXT_MANAGER_HASH := 988dae93c17b5477b8b97952cc5bca6809a386bbbba55940ce45aecc90cacb80/' drivers/kernelsu/Kbuild
+          echo "KSU_VER=v0.9.5" >> $GITHUB_ENV
+          curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s v0.9.5
           echo "=== [DIAG-APKSIGN] ==="
           grep -n "is_manager\|check_v2\|return true\|return false" drivers/kernelsu/apk_sign.c || true
           echo "=== [DIAG-V3CHECK] ==="

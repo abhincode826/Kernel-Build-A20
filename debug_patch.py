@@ -24,18 +24,3 @@ c = c.replace(
 
 with open('drivers/kernelsu/ksu.c', 'w') as f:
     f.write(c)
-
-with open('drivers/kernelsu/apk_sign.c', 'r') as f:
-    a = f.read()
-
-print("BEFORE:", 'v3_signing_exist || v3_1_signing_exist' in a)
-a = a.replace(
-    '\tif (v3_signing_exist || v3_1_signing_exist) {',
-    '\tif (false && (v3_signing_exist || v3_1_signing_exist)) {'
-)
-print("AFTER:", 'false &&' in a)
-
-with open('drivers/kernelsu/apk_sign.c', 'w') as f:
-    f.write(a)
-
-print("Patch applied")
