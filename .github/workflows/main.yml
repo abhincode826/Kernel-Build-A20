@@ -77,6 +77,8 @@ jobs:
           grep -i "kernelsu" drivers/Kconfig || echo "MISSING FROM drivers/Kconfig"
           echo "=== [DIAG-KOBJ] who creates ksu sysfs ==="
           grep -rn "kobject_create\|ksu_kobj\|kernel_kobj" drivers/kernelsu/ | grep -v "\.o:"
+          echo "=== [DIAG-DEV] who creates /dev/ksu ==="
+          grep -rn "misc_register\|miscdevice\|cdev_init\|device_create" drivers/kernelsu/
           sed -i "s/-Eureka-KSUNext-Test/-Eureka-KSUNext-b${{ github.run_number }}/" arch/arm64/configs/exynos7885-a20_defconfig
           
       - name: Debug defconfig
