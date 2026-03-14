@@ -53,8 +53,8 @@ with open('drivers/kernelsu/apk_sign.c', 'r') as f:
     a = f.read()
 
 a = a.replace(
-    'if (v3_signing_exist || v3_1_signing_exist) {\n#ifdef CONFIG_KSU_DEBUG\n\t\tpr_err("Unexpected v3 signature scheme found!\\n");\n#endif\n\t\treturn false;\n\t}',
-    '// v3 check bypassed for compatibility'
+    'if (v3_signing_exist || v3_1_signing_exist) {',
+    'if (false && (v3_signing_exist || v3_1_signing_exist)) {'
 )
 
 with open('drivers/kernelsu/apk_sign.c', 'w') as f:
