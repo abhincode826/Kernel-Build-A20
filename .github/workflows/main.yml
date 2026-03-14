@@ -88,6 +88,8 @@ jobs:
           grep -rn "ioctl\|KSU_DEV\|dev/ksu" drivers/kernelsu/ || true
           echo "=== [DIAG-SUCOMPAT-FULL] ==="
           sed -n '80,130p' drivers/kernelsu/sucompat.c || true
+          echo "=== [DIAG-KSU-FULL] ksu.c full ==="
+          cat drivers/kernelsu/ksu.c || true
           
       - name: Debug defconfig
         working-directory: kernel
