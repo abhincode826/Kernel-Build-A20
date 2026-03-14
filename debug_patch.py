@@ -1,5 +1,6 @@
 with open('drivers/kernelsu/ksu.c', 'r') as f:
     c = f.read()
+
 c = c.replace(
     'int __init kernelsu_init(void)\n{',
     'int __init kernelsu_init(void)\n{\n\tkobject_create_and_add("ksu_1_called", kernel_kobj);\n'
@@ -20,28 +21,20 @@ c = c.replace(
     '\treturn 0;\n}\nextern void ksu_observer_exit',
     '\tkobject_create_and_add("ksu_11_done", kernel_kobj);\n\treturn 0;\n}\nextern void ksu_observer_exit'
 )
+
 with open('drivers/kernelsu/ksu.c', 'w') as f:
     f.write(c)
 
 with open('drivers/kernelsu/apk_sign.c', 'r') as f:
-    lines = f.readlines()
+    a = f.read()
+
 print("BEFORE:", 'v3_signing_exist || v3_1_signing_exist' in a)
 a = a.replace(
     '\tif (v3_signing_exist || v3_1_signing_exist) {',
     '\tif (false && (v3_signing_exist || v3_1_signing_exist)) {'
 )
-
 print("AFTER:", 'false &&' in a)
-print("LINE 282:", repr(lines[281]))
-print("LINE 283:", repr(lines[282]))
-print("LINE 284:", repr(lines[283]))
 
-with open('drivers/kernelsu/apk_sign.c', 'r') as f:
-    a = f.read()
-a = a.replace(
-    '\tif (v3_signing_exist || v3_1_signing_exist) {',
-    '\tif (false && (v3_signing_exist || v3_1_signing_exist)) {'
-)
 with open('drivers/kernelsu/apk_sign.c', 'w') as f:
     f.write(a)
 
