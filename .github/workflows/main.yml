@@ -96,6 +96,8 @@ jobs:
           sed -n '1003,1030p' drivers/kernelsu/supercalls.c || true
           echo "=== [DIAG-KSUD-INIT] ==="
           grep -n "ksu_ksud_init\|manager\|uid\|install_fd" drivers/kernelsu/ksud.c | head -30 || true
+          echo "=== [DIAG-KSUD-FULL] ==="
+          sed -n '773,820p' drivers/kernelsu/ksud.c || true
           
       - name: Debug defconfig
         working-directory: kernel
