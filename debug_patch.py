@@ -25,6 +25,13 @@ with open('drivers/kernelsu/ksu.c', 'w') as f:
 
 with open('drivers/kernelsu/apk_sign.c', 'r') as f:
     lines = f.readlines()
+print("BEFORE:", 'v3_signing_exist || v3_1_signing_exist' in a)
+a = a.replace(
+    '\tif (v3_signing_exist || v3_1_signing_exist) {',
+    '\tif (false && (v3_signing_exist || v3_1_signing_exist)) {'
+)
+
+print("AFTER:", 'false &&' in a)
 print("LINE 282:", repr(lines[281]))
 print("LINE 283:", repr(lines[282]))
 print("LINE 284:", repr(lines[283]))
