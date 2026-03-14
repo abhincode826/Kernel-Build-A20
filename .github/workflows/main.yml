@@ -81,6 +81,10 @@ jobs:
           echo "=== [DIAG-DEV] who creates /dev/ksu ==="
           grep -rn "misc_register" drivers/kernelsu/ || true
           echo "=== [DIAG-IOCTL] how kernel exposes interface ==="
+          echo "=== [DIAG-HOOK] faccessat hook logic ==="
+          grep -n "faccessat\|magic\|version\|KSU_VERSION\|uid\|root" drivers/kernelsu/ksu.c || true
+          echo "=== [DIAG-SUCOMPAT] sucompat hook ==="
+          grep -n "faccessat\|magic\|version" drivers/kernelsu/sucompat.c || true
           grep -rn "ioctl\|KSU_DEV\|dev/ksu" drivers/kernelsu/ || true
           
       - name: Debug defconfig
