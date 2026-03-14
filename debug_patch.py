@@ -52,6 +52,13 @@ with open('drivers/kernelsu/ksu.c', 'w') as f:
 with open('drivers/kernelsu/apk_sign.c', 'r') as f:
     a = f.read()
 
+# Find exact string around v3_signing_exist check
+idx = a.find('v3_signing_exist || v3_1_signing_exist')
+print("CONTEXT:", repr(a[idx-5:idx+50]))
+
+with open('drivers/kernelsu/apk_sign.c', 'r') as f:
+    a = f.read()
+
 a = a.replace(
     'if (v3_signing_exist || v3_1_signing_exist) {',
     'if (false && (v3_signing_exist || v3_1_signing_exist)) {'
