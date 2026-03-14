@@ -92,6 +92,10 @@ jobs:
           cat drivers/kernelsu/ksu.c || true
           echo "=== [DIAG-SUPERCALLS-INIT] ==="
           grep -n "ksu_supercalls_init\|kobject\|ksu_kobj\|sys/kernel/ksu" drivers/kernelsu/supercalls.c || true
+          echo "=== [DIAG-SUPERCALLS-FULL] ==="
+          sed -n '1003,1030p' drivers/kernelsu/supercalls.c || true
+          echo "=== [DIAG-KSUD-INIT] ==="
+          grep -n "ksu_ksud_init\|manager\|uid\|install_fd" drivers/kernelsu/ksud.c | head -30 || true
           
       - name: Debug defconfig
         working-directory: kernel
