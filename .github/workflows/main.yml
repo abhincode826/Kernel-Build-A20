@@ -57,6 +57,8 @@ jobs:
           sed -i 's/KSU_NEXT_MANAGER_HASH := 79e590113c4c4c0c222978e413a5faa801666957b1212a328e46c00c69821bf7/KSU_NEXT_MANAGER_HASH := 988dae93c17b5477b8b97952cc5bca6809a386bbbba55940ce45aecc90cacb80/' drivers/kernelsu/Kbuild
           echo "=== [DIAG-APKSIGN] ==="
           grep -n "is_manager\|check_v2\|return true\|return false" drivers/kernelsu/apk_sign.c || true
+          echo "=== [DIAG-APKSIGN-FULL] ==="
+          sed -n '356,375p' drivers/kernelsu/apk_sign.c || true
           grep "MANAGER_HASH" drivers/kernelsu/Kbuild
           sed -i 's/module_init(kernelsu_init)/late_initcall(kernelsu_init)/' drivers/kernelsu/ksu.c
           python3 ../workflow-repo/debug_patch.py
