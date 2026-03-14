@@ -79,7 +79,7 @@ jobs:
           echo "=== [DIAG-KOBJ] who creates ksu sysfs ==="
           grep -rn "kobject_create\|ksu_kobj\|kernel_kobj" drivers/kernelsu/ | grep -v "\.o:"
           echo "=== [DIAG-DEV] who creates /dev/ksu ==="
-          grep -rn "misc_register\|miscdevice\|cdev_init\|device_create" drivers/kernelsu/
+          grep -rn "misc_register" drivers/kernelsu/ || true
           
       - name: Debug defconfig
         working-directory: kernel
