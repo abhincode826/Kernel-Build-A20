@@ -59,6 +59,9 @@ jobs:
           grep -n "is_manager\|check_v2\|return true\|return false" drivers/kernelsu/apk_sign.c || true
           echo "=== [DIAG-APKSIGN-FULL] ==="
           sed -n '356,375p' drivers/kernelsu/apk_sign.c || true
+          echo "=== [DIAG-APKSIGN-CALLER] ==="
+          grep -n "is_manager_apk\|check_v2_signature\|expected_size\|expected_hash\|EXPECTED_MANAGER" drivers/kernelsu/apk_sign.c || true
+          grep -n "is_manager_apk\|check_v2_signature" drivers/kernelsu/throne_tracker.c || true
           grep "MANAGER_HASH" drivers/kernelsu/Kbuild
           sed -i 's/module_init(kernelsu_init)/late_initcall(kernelsu_init)/' drivers/kernelsu/ksu.c
           python3 ../workflow-repo/debug_patch.py
