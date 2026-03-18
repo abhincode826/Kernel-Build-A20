@@ -24,3 +24,17 @@ c = c.replace(
 
 with open('drivers/kernelsu/ksu.c', 'w') as f:
     f.write(c)
+
+with open('drivers/kernelsu/apk_sign.c', 'r') as f:
+    a = f.read()
+
+# Replace check_v2_signature to always return true
+a = a.replace(
+    'return v2_signing_valid;',
+    'return true; // bypass: equinox-style no sig check'
+)
+
+with open('drivers/kernelsu/apk_sign.c', 'w') as f:
+    f.write(a)
+
+print("apk_sign bypass applied")
